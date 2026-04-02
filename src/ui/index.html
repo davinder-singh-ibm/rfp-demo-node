@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RFP Proposal Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>AI RFP Proposal Generator</h1>
+
+  <div class="card">
+    <h2>Step 1: Upload RFP</h2>
+    <input type="file" id="rfpFile" />
+    <button onclick="uploadRFP()">Upload</button>
+    <pre id="uploadResult"></pre>
+  </div>
+
+  <div class="card">
+    <h2>Step 2: Generate Proposal</h2>
+    <button onclick="generateProposal()">Generate Proposal</button>
+    <pre id="generateResult"></pre>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

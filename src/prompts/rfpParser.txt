@@ -1,0 +1,6 @@
+Extract the key information from the following RFP text. Focus on evaluation criteria, submission deadlines, important dates, and the issuing company/organization. Return ONLY valid JSON without any markdown formatting, code blocks, or additional text. The response must be a JSON object with the following structure:
+{
+  "company": "name of the issuing company or organization",
+  "criteria": ["list of key evaluation criteria"],
+  "deadlines": ["list of important deadlines and dates"]
+}

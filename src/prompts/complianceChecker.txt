@@ -1,0 +1,15 @@
+Analyze the following RFP text and check for the presence of standard RFP sections. Required sections typically include:
+- Executive Summary or Introduction
+- Scope of Work
+- Requirements or Specifications
+- Timeline or Schedule
+- Evaluation Criteria
+- Submission Instructions
+- Terms and Conditions
+
+Return ONLY valid JSON without any markdown formatting, code blocks, or additional text. The response must be a JSON object with:
+{
+  "present_sections": ["list of sections that are present"],
+  "missing_sections": ["list of sections that are missing"],
+  "compliance_score": "percentage of required sections present (e.g., 80%)"
+}

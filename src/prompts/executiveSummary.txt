@@ -1,0 +1,7 @@
+Write an Executive Summary for a professional RFP proposal response.
+
+Rules:
+- Use persuasive business tone.
+- Mention client needs, business value, and timeline.
+- Do not invent client-specific facts.
+- Keep it 2-3 paragraphs.

@@ -1,0 +1,6 @@
+Write "Team & Governance" section.
+
+Rules:
+- Include roles: Project Manager, Solution Architect, DevOps, QA, Developers.
+- Include governance meetings and reporting.
+- Mention risk management.

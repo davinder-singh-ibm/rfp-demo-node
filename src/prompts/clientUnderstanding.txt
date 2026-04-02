@@ -1,0 +1,7 @@
+Write the "Client Understanding" section.
+
+Rules:
+- Show understanding of pain points and goals.
+- Refer to extracted requirements.
+- Avoid hallucination.
+- Keep structured bullet points where useful.

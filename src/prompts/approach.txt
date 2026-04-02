@@ -1,0 +1,6 @@
+Write the "Proposed Approach" section.
+
+Rules:
+- Include phases (Discovery, Design, Build, Testing, Deployment, Support).
+- Mention Azure cloud architecture.
+- Keep it structured with headings.

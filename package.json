@@ -1,0 +1,31 @@
+{
+  "name": "rfp-demo-node",
+  "version": "1.0.0",
+  "description": "Azure AI Powered RFP Response Generator (Node.js + Express)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "index:proposals": "node src/scripts/indexPastProposals.js"
+  },
+  "dependencies": {
+    "@azure/cognitiveservices-websearch": "^3.0.1",
+    "@azure/identity": "^4.13.1",
+    "@azure/search-documents": "^12.1.0",
+    "@azure/storage-blob": "^12.17.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mammoth": "^1.7.1",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.57.0",
+    "pdf-parse": "^1.1.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1",
+    "whatwg-url": "^16.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
