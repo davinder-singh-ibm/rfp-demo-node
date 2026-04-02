@@ -29,8 +29,10 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:4200",
   "http://localhost:5173",
-  // "https://<yourapp>.azurewebsites.net"
-];
+  "rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net",
+  "http://rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net",
+  "https://rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net"
+  ];
 
 app.use(
   cors({
