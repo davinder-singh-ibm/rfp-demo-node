@@ -8,6 +8,7 @@
 - Generate 5-section proposal
 - Save output to Azure Blob Storage
 - Simple HTML UI
+- some changes
 
 ---
 
