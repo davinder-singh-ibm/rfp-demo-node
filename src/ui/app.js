@@ -1,5 +1,45 @@
 let extractedTextGlobal = "";
 
+// Helper function to show loader
+function showLoader(loaderId, progressId, textId, buttonId) {
+  document.getElementById(loaderId).classList.add("active");
+  document.getElementById(buttonId).disabled = true;
+  document.getElementById(progressId).style.width = "0%";
+  document.getElementById(textId).textContent = "0%";
+}
+
+// Helper function to hide loader
+function hideLoader(loaderId, buttonId) {
+  document.getElementById(loaderId).classList.remove("active");
+  document.getElementById(buttonId).disabled = false;
+}
+
+// Helper function to update progress
+function updateProgress(progressId, textId, percentage) {
+  document.getElementById(progressId).style.width = percentage + "%";
+  document.getElementById(textId).textContent = percentage + "%";
+}
+
+// Simulate progress for API calls
+function simulateProgress(progressId, textId, duration, callback) {
+  let progress = 0;
+  const interval = 50; // Update every 50ms
+  const increment = (100 / duration) * interval;
+  
+  const timer = setInterval(() => {
+    progress += increment;
+    if (progress >= 95) {
+      clearInterval(timer);
+      updateProgress(progressId, textId, 95);
+      // Wait for actual API response to complete to 100%
+    } else {
+      updateProgress(progressId, textId, Math.floor(progress));
+    }
+  }, interval);
+  
+  return timer;
+}
+
 async function uploadRFP() {
   const fileInput = document.getElementById("rfpFile");
   const file = fileInput.files[0];
@@ -9,18 +49,39 @@ async function uploadRFP() {
     return;
   }
 
-  const formData = new FormData();
-  formData.append("rfp", file);
+  // Show loader
+  showLoader("uploadLoader", "uploadProgress", "uploadProgressText", "uploadBtn");
+  
+  // Start progress simulation (2 seconds for upload)
+  const progressTimer = simulateProgress("uploadProgress", "uploadProgressText", 2000);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const formData = new FormData();
+    formData.append("rfp", file);
 
-  const data = await res.json();
-  document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData
+    });
 
-  extractedTextGlobal = data.extractedText;
+    const data = await res.json();
+    
+    // Complete progress to 100%
+    clearInterval(progressTimer);
+    updateProgress("uploadProgress", "uploadProgressText", 100);
+    
+    // Show result after a brief delay
+    setTimeout(() => {
+      document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
+      extractedTextGlobal = data.extractedText;
+      hideLoader("uploadLoader", "uploadBtn");
+    }, 500);
+    
+  } catch (error) {
+    clearInterval(progressTimer);
+    hideLoader("uploadLoader", "uploadBtn");
+    alert("Upload failed: " + error.message);
+  }
 }
 
 async function generateProposal() {
@@ -29,12 +90,34 @@ async function generateProposal() {
     return;
   }
 
-  const res = await fetch("/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ extractedText: extractedTextGlobal })
-  });
+  // Show loader
+  showLoader("generateLoader", "generateProgress", "generateProgressText", "generateBtn");
+  
+  // Start progress simulation (5 seconds for generation - slower as AI processing takes longer)
+  const progressTimer = simulateProgress("generateProgress", "generateProgressText", 5000);
 
-  const data = await res.json();
-  document.getElementById("generateResult").textContent = JSON.stringify(data, null, 2);
+  try {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ extractedText: extractedTextGlobal })
+    });
+
+    const data = await res.json();
+    
+    // Complete progress to 100%
+    clearInterval(progressTimer);
+    updateProgress("generateProgress", "generateProgressText", 100);
+    
+    // Show result after a brief delay
+    setTimeout(() => {
+      document.getElementById("generateResult").textContent = JSON.stringify(data, null, 2);
+      hideLoader("generateLoader", "generateBtn");
+    }, 500);
+    
+  } catch (error) {
+    clearInterval(progressTimer);
+    hideLoader("generateLoader", "generateBtn");
+    alert("Generation failed: " + error.message);
+  }
 }
