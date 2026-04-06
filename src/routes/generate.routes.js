@@ -102,6 +102,16 @@ router.post("/", async (req, res) => {
 
     // Step 2: Check compliance for missing sections
     const compliance = await checkCompliance(extractedText);
+    const {compliance_score=0,missing_sections=[],present_sections=[] } = compliance;
+
+    if (compliance_score < 80) {
+      return res.status(400).json({
+        error: "RFP compliance score is below the minimum threshold",
+        compliance_score,
+        missing_sections,
+        present_sections
+      });
+    }
 
     // Step 3: Extract structured requirements
     const requirementsJson = await extractRequirements(extractedText);

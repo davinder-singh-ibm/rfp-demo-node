@@ -49,9 +49,23 @@ async function researchCompany(companyName) {
     return [];
   }
 
-  const query = `${companyName} company information news recent developments`;
-  
-  const results = await searchWeb(query, 1);
+  const query = [
+    `"${companyName}"`,
+    "company overview",
+    "about",
+    "services",
+    "products",
+    "industry",
+    "customers",
+    "case studies",
+    "leadership",
+    "recent news",
+    "recent developments",
+    "partnerships",
+    "acquisitions"
+  ].join(" ");
+
+  const results = await searchWeb(query, 5);
 
   // Extract relevant information
   const companyInfo = results.map(result => ({
