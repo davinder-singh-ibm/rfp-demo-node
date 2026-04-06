@@ -318,6 +318,15 @@ pre:empty {
   color: white;
   font-size: 0.875rem;
   animation: fadeIn 0.6s ease-out 0.4s both;
+.footer p {
+  margin: 8px 0;
+}
+
+.copyright {
+  font-size: 0.8125rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
 }
 
 /* Animations */
