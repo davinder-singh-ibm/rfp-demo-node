@@ -1,23 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>RFP Proposal Generator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI RFP Proposal Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>AI RFP Proposal Generator</h1>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1 class="title">
+          <span class="title-icon">🤖</span>
+          AI RFP Proposal Generator
+        </h1>
+        <p class="subtitle">Transform your RFP documents into winning proposals with AI-powered insights</p>
+      </div>
+    </header>
 
-  <div class="card">
-    <h2>Step 1: Upload RFP</h2>
-    <input type="file" id="rfpFile" />
-    <button onclick="uploadRFP()">Upload</button>
-    <pre id="uploadResult"></pre>
-  </div>
+    <main class="main-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="step-badge">Step 1</div>
+          <h2 class="card-title">Upload RFP Document</h2>
+          <p class="card-description">Select your RFP file to begin the analysis process</p>
+        </div>
+        <div class="card-body">
+          <div class="file-input-wrapper">
+            <input type="file" id="rfpFile" accept=".pdf,.doc,.docx" />
+            <label for="rfpFile" class="file-label">
+              <span class="file-icon">📄</span>
+              <span class="file-text">Choose a file or drag it here</span>
+            </label>
+          </div>
+          <button onclick="uploadRFP()" id="uploadBtn" class="btn btn-primary">
+            <span class="btn-icon">⬆️</span>
+            Upload & Analyze
+          </button>
+          <div class="loader-container" id="uploadLoader">
+            <div class="progress-bar">
+              <div class="progress-fill" id="uploadProgress"></div>
+            </div>
+            <div class="progress-text" id="uploadProgressText">0%</div>
+          </div>
+          <div class="result-container">
+            <pre id="uploadResult"></pre>
+          </div>
+        </div>
+      </div>
 
-  <div class="card">
-    <h2>Step 2: Generate Proposal</h2>
-    <button onclick="generateProposal()">Generate Proposal</button>
-    <pre id="generateResult"></pre>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-badge">Step 2</div>
+          <h2 class="card-title">Generate Proposal</h2>
+          <p class="card-description">Create a comprehensive proposal based on the analyzed RFP</p>
+        </div>
+        <div class="card-body">
+          <button onclick="generateProposal()" id="generateBtn" class="btn btn-success">
+            <span class="btn-icon">✨</span>
+            Generate Proposal
+          </button>
+          <div class="loader-container" id="generateLoader">
+            <div class="progress-bar">
+              <div class="progress-fill" id="generateProgress"></div>
+            </div>
+            <div class="progress-text" id="generateProgressText">0%</div>
+          </div>
+          <div class="result-container">
+            <pre id="generateResult"></pre>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Powered by AI • Built with ❤️</p>
+    </footer>
   </div>
 
   <script src="app.js"></script>
