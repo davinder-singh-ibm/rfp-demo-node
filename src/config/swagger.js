@@ -12,7 +12,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net',
       },
     ],
   },
