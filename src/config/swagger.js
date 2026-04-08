@@ -14,6 +14,25 @@ const options = {
       {
         url: 'https://rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net',
       },
+      {
+        url: 'http://localhost:3000',
+        description: 'Local development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-api-key',
+          description: 'API key for MCP server integration',
+        },
+      },
+    },
+    security: [
+      {
+        ApiKeyAuth: [],
+      },
     ],
   },
   apis: ['./src/routes/*.js'], // Path to the API docs

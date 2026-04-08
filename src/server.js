@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const { PORT } = require("./config/env");
+const { PORT, API_KEY } = require("./config/env");
 
 const uploadRoutes = require("./routes/upload.routes");
 const generateRoutes = require("./routes/generate.routes");
@@ -69,7 +69,7 @@ app.use(express.urlencoded({ extended: true }));
 
 /**
  * ======================================
- * Azure App Service Easy Auth Middleware
+ * API Key Authentication Middleware
  * ======================================
  */
 function requireAuth(req, res, next) {
@@ -77,11 +77,30 @@ function requireAuth(req, res, next) {
     return next();
   }
 
-  const principal = req.headers["x-ms-client-principal"];
-  if (!principal) {
+  const apiKey = req.headers["x-api-key"];
+
+  if (!apiKey) {
     return res.status(401).json({
-      message: "Unauthorized. Please login using Microsoft Entra ID.",
+      message: "Unauthorized. Please provide x-api-key header.",
     });
+  }
+
+  // Validate API key against environment variable
+  if (API_KEY) {
+    // If API_KEY is configured, validate against it
+    if (apiKey !== API_KEY) {
+      return res.status(401).json({
+        message: "Invalid API key.",
+      });
+    }
+  } else {
+    // If API_KEY is not configured, accept any non-empty API key (dev mode)
+    console.warn("⚠️  API_KEY not configured. Accepting any non-empty API key (DEV MODE)");
+    if (apiKey.trim().length === 0) {
+      return res.status(401).json({
+        message: "Invalid API key.",
+      });
+    }
   }
 
   next();
@@ -96,7 +115,7 @@ app.get("/api/me", (req, res) => {
   if (DISABLE_ENTRA_AUTH) {
     return res.json({
       authenticated: true,
-      message: "Entra Auth Disabled (DEV MODE)",
+      message: "Auth Disabled (DEV MODE)",
       user: {
         name: "DEV_USER",
         roles: ["developer"],
@@ -104,24 +123,18 @@ app.get("/api/me", (req, res) => {
     });
   }
 
-  const principal = req.headers["x-ms-client-principal"];
-  if (!principal) {
-    return res.status(401).json({ message: "Not logged in" });
+  const apiKey = req.headers["x-api-key"];
+  if (!apiKey) {
+    return res.status(401).json({ message: "Not authenticated" });
   }
 
-  try {
-    const decoded = Buffer.from(principal, "base64").toString("utf8");
-    const user = JSON.parse(decoded);
-    res.json({
-      authenticated: true,
-      user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: "Failed to decode user principal",
-      err,
-    });
-  }
+  res.json({
+    authenticated: true,
+    user: {
+      name: "API_USER",
+      roles: ["api_user"],
+    },
+  });
 });
 
 /**
@@ -154,6 +167,43 @@ app.use("/api/upload", requireAuth, uploadRoutes);
 app.use("/api/generate", requireAuth, generateRoutes);
 app.use("/api/parser", requireAuth, parserRoutes);
 app.use("/api/proposals", requireAuth, proposalRoutes);
+
+/**
+ * ======================================
+ * API 404 Handler - Must come before UI fallback
+ * ======================================
+ */
+app.use("/api/*", (req, res) => {
+  res.status(404).json({
+    error: "Not Found",
+    message: `API endpoint ${req.method} ${req.path} does not exist`,
+    path: req.path,
+  });
+});
+
+/**
+ * ======================================
+ * API Error Handler - JSON errors for /api routes
+ * ======================================
+ */
+app.use((err, req, res, next) => {
+  // Only handle errors for API routes
+  if (req.path.startsWith("/api")) {
+    console.error("API Error:", err);
+    
+    const statusCode = err.statusCode || err.status || 500;
+    const message = err.message || "Internal Server Error";
+    
+    res.status(statusCode).json({
+      error: err.name || "Error",
+      message: message,
+      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    });
+  } else {
+    // Pass to default error handler for non-API routes
+    next(err);
+  }
+});
 
 /**
  * ======================================

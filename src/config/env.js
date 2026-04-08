@@ -3,6 +3,9 @@ require("dotenv").config();
 module.exports = {
   PORT: process.env.PORT || 3000,
 
+  // API Authentication
+  API_KEY: process.env.API_KEY,
+
   AZURE_STORAGE_CONNECTION_STRING: process.env.AZURE_STORAGE_CONNECTION_STRING,
   BLOB_CONTAINER_INCOMING: process.env.BLOB_CONTAINER_INCOMING,
   BLOB_CONTAINER_OUTPUT: process.env.BLOB_CONTAINER_OUTPUT,

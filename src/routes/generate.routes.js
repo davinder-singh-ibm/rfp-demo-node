@@ -87,7 +87,7 @@ const router = express.Router();
  *       - Calls semantic search
  *       - Writes proposal output to Blob Storage
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  */
 router.post("/", async (req, res) => {
   try {

@@ -59,7 +59,7 @@ const router = express.Router();
  *       500:
  *         description: Search service failure
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  */
 router.post("/retrieve", async (req, res) => {
   try {
@@ -76,6 +76,56 @@ router.post("/retrieve", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/proposals/retrieve-from-blob:
+ *   post:
+ *     tags:
+ *       - Proposals
+ *     summary: Retrieve similar proposals from blob-stored RFP
+ *     description: >
+ *       Downloads an RFP file from blob storage, extracts its text,
+ *       and retrieves similar past proposals using semantic search.
+ *     operationId: retrieveSimilarProposalsFromBlob
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               blobName:
+ *                 type: string
+ *                 description: Name of the blob file in incoming container
+ *               industry:
+ *                 type: string
+ *                 description: Optional industry filter
+ *             required:
+ *               - blobName
+ *     responses:
+ *       200:
+ *         description: List of similar proposals
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 blobName:
+ *                   type: string
+ *                 industry:
+ *                   type: string
+ *                   nullable: true
+ *                 proposals:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Missing blobName
+ *       500:
+ *         description: Blob download or search failure
+ *     security:
+ *       - ApiKeyAuth: []
+ */
 router.post("/retrieve-from-blob", async (req, res) => {
   try {
     const { blobName, industry } = req.body;

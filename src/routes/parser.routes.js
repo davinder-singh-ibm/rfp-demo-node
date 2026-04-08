@@ -39,7 +39,7 @@ const router = express.Router();
  *       500:
  *         description: Parser failure
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  *
  * /api/parser/parse-from-blob:
  *   post:
@@ -67,7 +67,7 @@ const router = express.Router();
  *       500:
  *         description: Blob or parser failure
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  *
  * /api/parser/compliance:
  *   post:
@@ -96,9 +96,8 @@ const router = express.Router();
  *       500:
  *         description: Compliance check failure
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  */
-``
 router.post("/parse", async (req, res) => {
   try {
     const { extractedText } = req.body;

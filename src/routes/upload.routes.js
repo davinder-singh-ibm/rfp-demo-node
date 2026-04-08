@@ -80,7 +80,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       - Uploads file to Azure Blob Storage
  *       - Extracts text from the uploaded file
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  */
 router.post("/", upload.single("rfp"), async (req, res) => {
   try {
