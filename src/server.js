@@ -7,6 +7,8 @@ const uploadRoutes = require("./routes/upload.routes");
 const generateRoutes = require("./routes/generate.routes");
 const parserRoutes = require("./routes/parser.routes");
 const proposalRoutes = require("./routes/proposal.routes");
+const pdfRoutes = require("./routes/pdf.routes");
+const emailRoutes = require("./routes/email.routes");
 
 const app = express();
 
@@ -167,6 +169,8 @@ app.use("/api/upload", requireAuth, uploadRoutes);
 app.use("/api/generate", requireAuth, generateRoutes);
 app.use("/api/parser", requireAuth, parserRoutes);
 app.use("/api/proposals", requireAuth, proposalRoutes);
+app.use("/api/download-pdf", requireAuth, pdfRoutes);
+app.use("/api/send-email", requireAuth, emailRoutes);
 
 /**
  * ======================================
