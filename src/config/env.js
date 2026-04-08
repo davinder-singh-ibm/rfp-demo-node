@@ -3,6 +3,9 @@ require("dotenv").config();
 module.exports = {
   PORT: process.env.PORT || 3000,
 
+  // API Authentication
+  API_KEY: process.env.API_KEY,
+
   AZURE_STORAGE_CONNECTION_STRING: process.env.AZURE_STORAGE_CONNECTION_STRING,
   BLOB_CONTAINER_INCOMING: process.env.BLOB_CONTAINER_INCOMING,
   BLOB_CONTAINER_OUTPUT: process.env.BLOB_CONTAINER_OUTPUT,
@@ -19,5 +22,8 @@ module.exports = {
   AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,
 
   BING_SEARCH_SUBSCRIPTION_KEY: process.env.BING_SEARCH_SUBSCRIPTION_KEY,
-  BING_SEARCH_ENDPOINT: process.env.BING_SEARCH_ENDPOINT || "https://api.bing.microsoft.com/v7.0/search"
+  BING_SEARCH_ENDPOINT: process.env.BING_SEARCH_ENDPOINT || "https://api.bing.microsoft.com/v7.0/search",
+
+  // Tavily Search API (alternative to Bing)
+  TAVILY_API_KEY: process.env.TAVILY_API_KEY
 };

@@ -79,7 +79,24 @@ const router = express.Router();
  *                 savedAs:
  *                   type: string
  *       400:
- *         description: Missing or invalid extractedText
+ *         description: Missing or invalid extractedText, or compliance score below threshold
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 compliance_score:
+ *                   type: number
+ *                 missing_sections:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 present_sections:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       500:
  *         description: Internal error during proposal generation
  *     x-sideEffects:
@@ -87,7 +104,7 @@ const router = express.Router();
  *       - Calls semantic search
  *       - Writes proposal output to Blob Storage
  *     security:
- *       - {}
+ *       - ApiKeyAuth: []
  */
 router.post("/", async (req, res) => {
   try {
@@ -102,6 +119,21 @@ router.post("/", async (req, res) => {
 
     // Step 2: Check compliance for missing sections
     const compliance = await checkCompliance(extractedText);
+    const {
+      compliance_score = 0,
+      missing_sections = [],
+      present_sections = []
+    } = compliance;
+
+    // Validate compliance score threshold
+    if (compliance_score < 80) {
+      return res.status(400).json({
+        error: "RFP compliance score is below the minimum threshold",
+        compliance_score,
+        missing_sections,
+        present_sections
+      });
+    }
 
     // Step 3: Extract structured requirements
     const requirementsJson = await extractRequirements(extractedText);
