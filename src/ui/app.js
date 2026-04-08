@@ -62,6 +62,9 @@ async function uploadRFP() {
 
     const res = await fetch("/api/upload", {
       method: "POST",
+      headers: {
+        "x-api-key": "demo-mcp-key"
+      },
       body: formData
     });
 
@@ -100,7 +103,10 @@ async function generateProposal() {
   try {
     const res = await fetch("/api/generate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
       body: JSON.stringify({ extractedText: extractedTextGlobal })
     });
 
@@ -147,7 +153,10 @@ async function downloadProposal() {
     // Call the PDF generation API
     const res = await fetch("/api/download-pdf", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
       body: JSON.stringify({
         proposal: generatedProposalData.proposal,
         companyName: generatedProposalData.companyName,
@@ -229,7 +238,10 @@ async function sendEmail() {
   try {
     const res = await fetch("/api/send-email", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
       body: JSON.stringify({
         to: recipientEmail,
         subject: subject,
