@@ -66,7 +66,7 @@ const router = express.Router();
  */
 router.post("/", async (req, res) => {
   try {
-    const { to, subject, proposalText, companyName, savedAs } = req.body;
+    const { to, subject, proposalText, companyName, savedAs, rfpData, requirementsJson } = req.body;
 
     // Validate required fields
     if (!to || !subject || !proposalText) {
@@ -83,20 +83,23 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Send the email
+    // Send the email with PDF attachment
     const result = await sendProposalEmail({
       to,
       subject,
       proposalText,
       companyName,
-      savedAs
+      savedAs,
+      rfpData,
+      requirementsJson
     });
 
     return res.json({
       success: true,
-      message: "Email sent successfully",
+      message: "Email sent successfully with PDF attachment",
       to: to,
-      messageId: result.messageId
+      messageId: result.messageId,
+      attachmentName: result.attachmentName
     });
   } catch (err) {
     console.error("Email sending error:", err);

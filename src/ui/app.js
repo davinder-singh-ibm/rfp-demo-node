@@ -21,24 +21,74 @@ function updateProgress(progressId, textId, percentage) {
   document.getElementById(textId).textContent = percentage + "%";
 }
 
-// Simulate progress for API calls
-function simulateProgress(progressId, textId, duration, callback) {
-  let progress = 0;
-  const interval = 50; // Update every 50ms
-  const increment = (100 / duration) * interval;
+// Real-time progress tracking using Server-Sent Events
+function trackProgressWithSSE(url, body, progressId, textId, onComplete, onError) {
+  // Create a unique request ID for this generation
+  const requestId = Date.now();
   
-  const timer = setInterval(() => {
-    progress += increment;
-    if (progress >= 95) {
-      clearInterval(timer);
-      updateProgress(progressId, textId, 95);
-      // Wait for actual API response to complete to 100%
-    } else {
-      updateProgress(progressId, textId, Math.floor(progress));
+  // Use fetch to initiate the SSE connection
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": "demo-mcp-key"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  }, interval);
-  
-  return timer;
+    
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    function processStream() {
+      reader.read().then(({ done, value }) => {
+        if (done) {
+          return;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // Keep incomplete line in buffer
+
+        lines.forEach(line => {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'complete') {
+                // Final result received
+                updateProgress(progressId, textId, 100);
+                onComplete(data.data);
+              } else if (data.type === 'error') {
+                // Error occurred
+                onError(data.error);
+              } else if (data.percentage !== undefined) {
+                // Progress update
+                updateProgress(progressId, textId, data.percentage);
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        });
+
+        processStream();
+      }).catch(error => {
+        console.error('Stream reading error:', error);
+        onError(error.message);
+      });
+    }
+
+    processStream();
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+    onError(error.message);
+  });
 }
 
 async function uploadRFP() {
@@ -53,36 +103,53 @@ async function uploadRFP() {
   // Show loader
   showLoader("uploadLoader", "uploadProgress", "uploadProgressText", "uploadBtn");
   
-  // Start progress simulation (2 seconds for upload)
-  const progressTimer = simulateProgress("uploadProgress", "uploadProgressText", 2000);
-
   try {
     const formData = new FormData();
     formData.append("rfp", file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: {
-        "x-api-key": "demo-mcp-key"
-      },
-      body: formData
+    // Create XMLHttpRequest for upload progress tracking
+    const xhr = new XMLHttpRequest();
+    
+    // Track upload progress
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable) {
+        const percentComplete = Math.round((e.loaded / e.total) * 100);
+        updateProgress("uploadProgress", "uploadProgressText", percentComplete);
+      }
     });
 
-    const data = await res.json();
-    
-    // Complete progress to 100%
-    clearInterval(progressTimer);
-    updateProgress("uploadProgress", "uploadProgressText", 100);
-    
-    // Show result after a brief delay
-    setTimeout(() => {
-      document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
-      extractedTextGlobal = data.extractedText;
+    // Handle completion
+    xhr.addEventListener("load", () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        
+        // Complete progress to 100%
+        updateProgress("uploadProgress", "uploadProgressText", 100);
+        
+        // Show result after a brief delay
+        setTimeout(() => {
+          document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
+          extractedTextGlobal = data.extractedText;
+          hideLoader("uploadLoader", "uploadBtn");
+        }, 500);
+      } else {
+        hideLoader("uploadLoader", "uploadBtn");
+        alert("Upload failed: " + xhr.statusText);
+      }
+    });
+
+    // Handle errors
+    xhr.addEventListener("error", () => {
       hideLoader("uploadLoader", "uploadBtn");
-    }, 500);
+      alert("Upload failed: Network error");
+    });
+
+    // Send request
+    xhr.open("POST", "/api/upload");
+    xhr.setRequestHeader("x-api-key", "demo-mcp-key");
+    xhr.send(formData);
     
   } catch (error) {
-    clearInterval(progressTimer);
     hideLoader("uploadLoader", "uploadBtn");
     alert("Upload failed: " + error.message);
   }
@@ -97,43 +164,32 @@ async function generateProposal() {
   // Show loader
   showLoader("generateLoader", "generateProgress", "generateProgressText", "generateBtn");
   
-  // Start progress simulation (5 seconds for generation - slower as AI processing takes longer)
-  const progressTimer = simulateProgress("generateProgress", "generateProgressText", 5000);
-
-  try {
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "demo-mcp-key"
-      },
-      body: JSON.stringify({ extractedText: extractedTextGlobal })
-    });
-
-    const data = await res.json();
-    
-    // Store the generated proposal data
-    generatedProposalData = data;
-    
-    // Complete progress to 100%
-    clearInterval(progressTimer);
-    updateProgress("generateProgress", "generateProgressText", 100);
-    
-    // Show result after a brief delay
-    setTimeout(() => {
-      document.getElementById("generateResult").textContent = JSON.stringify(data, null, 2);
-      hideLoader("generateLoader", "generateBtn");
+  // Use real-time progress tracking with SSE
+  trackProgressWithSSE(
+    "/api/generate-stream",
+    { extractedText: extractedTextGlobal },
+    "generateProgress",
+    "generateProgressText",
+    (data) => {
+      // Success callback
+      generatedProposalData = data;
       
-      // Enable Download and Send Email buttons
-      document.getElementById("downloadBtn").disabled = false;
-      document.getElementById("sendEmailBtn").disabled = false;
-    }, 500);
-    
-  } catch (error) {
-    clearInterval(progressTimer);
-    hideLoader("generateLoader", "generateBtn");
-    alert("Generation failed: " + error.message);
-  }
+      // Show result after a brief delay
+      setTimeout(() => {
+        displayProposalResult(data);
+        hideLoader("generateLoader", "generateBtn");
+        
+        // Enable Download and Send Email buttons
+        document.getElementById("downloadBtn").disabled = false;
+        document.getElementById("sendEmailBtn").disabled = false;
+      }, 500);
+    },
+    (error) => {
+      // Error callback
+      hideLoader("generateLoader", "generateBtn");
+      alert("Generation failed: " + error);
+    }
+  );
 }
 
 // Download the generated proposal as PDF
@@ -247,14 +303,16 @@ async function sendEmail() {
         subject: subject,
         proposalText: generatedProposalData.proposal,
         companyName: generatedProposalData.companyName,
-        savedAs: generatedProposalData.savedAs
+        savedAs: generatedProposalData.savedAs,
+        rfpData: generatedProposalData.rfpData,
+        requirementsJson: generatedProposalData.requirementsJson
       })
     });
 
     const data = await res.json();
     
     if (res.ok) {
-      alert("Email sent successfully to " + recipientEmail + "!");
+      alert("Email sent successfully to " + recipientEmail + " with PDF attachment!");
     } else {
       alert("Failed to send email: " + (data.error || "Unknown error"));
     }
@@ -265,6 +323,56 @@ async function sendEmail() {
     sendEmailBtn.disabled = false;
     sendEmailBtn.innerHTML = originalText;
   }
+}
+
+// Display proposal result in a formatted way
+function displayProposalResult(data) {
+  const resultElement = document.getElementById("generateResult");
+  
+  // Create a formatted display
+  let formattedOutput = '';
+  
+  // Add metadata section
+  if (data.companyName) {
+    formattedOutput += `📋 COMPANY: ${data.companyName}\n\n`;
+  }
+  
+  if (data.rfpData) {
+    formattedOutput += '📊 RFP DETAILS:\n';
+    if (data.rfpData.title) formattedOutput += `   Title: ${data.rfpData.title}\n`;
+    if (data.rfpData.issueDate) formattedOutput += `   Issue Date: ${data.rfpData.issueDate}\n`;
+    if (data.rfpData.deadline) formattedOutput += `   Deadline: ${data.rfpData.deadline}\n`;
+    formattedOutput += '\n';
+  }
+  
+  if (data.compliance) {
+    formattedOutput += `✅ COMPLIANCE SCORE: ${data.compliance.compliance_score}%\n`;
+    if (data.compliance.present_sections && data.compliance.present_sections.length > 0) {
+      formattedOutput += `   Present Sections: ${data.compliance.present_sections.join(', ')}\n`;
+    }
+    formattedOutput += '\n';
+  }
+  
+  if (data.requirementsJson) {
+    formattedOutput += '🎯 REQUIREMENTS:\n';
+    if (data.requirementsJson.industry) formattedOutput += `   Industry: ${data.requirementsJson.industry}\n`;
+    if (data.requirementsJson.projectType) formattedOutput += `   Project Type: ${data.requirementsJson.projectType}\n`;
+    formattedOutput += '\n';
+  }
+  
+  if (data.retrievedEvidence && data.retrievedEvidence.length > 0) {
+    formattedOutput += `📚 SIMILAR PROPOSALS FOUND: ${data.retrievedEvidence.length}\n\n`;
+  }
+  
+  // Add separator
+  formattedOutput += '═'.repeat(60) + '\n\n';
+  
+  // Add the actual proposal content
+  if (data.proposal) {
+    formattedOutput += data.proposal;
+  }
+  
+  resultElement.textContent = formattedOutput;
 }
 
 // Made with Bob

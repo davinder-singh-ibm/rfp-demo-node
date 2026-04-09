@@ -70,34 +70,43 @@ ${evidenceText}
 
   const whyUs = await generateText(loadPrompt("whyUs.txt"), baseContext);
 
-  return `
-==============================
-AI GENERATED PROPOSAL DRAFT
-==============================
+  return `# AI GENERATED PROPOSAL DRAFT
 
-1. EXECUTIVE SUMMARY
-------------------------------
+---
+
+## 1. EXECUTIVE SUMMARY
+
 ${executiveSummary}
 
-2. CLIENT UNDERSTANDING
-------------------------------
+---
+
+## 2. CLIENT UNDERSTANDING
+
 ${clientUnderstanding}
 
-3. PROPOSED APPROACH
-------------------------------
+---
+
+## 3. PROPOSED APPROACH
+
 ${approach}
 
-4. TEAM & GOVERNANCE
-------------------------------
+---
+
+## 4. TEAM & GOVERNANCE
+
 ${governance}
 
-5. WHY US / VALUE PROPOSITION
-------------------------------
+---
+
+## 5. WHY US / VALUE PROPOSITION
+
 ${whyUs}
 
-==============================
-END OF DOCUMENT
-==============================
+---
+
+**Document Generated:** ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+
+**Powered by:** AI RFP Proposal Generator - POD 5 Team
 `;
 }
 
