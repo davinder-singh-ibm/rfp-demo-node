@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"my-mcp-server-cd53cef1": {
+			"url": "https://rfp-mcp-g5bqg8dyehbcc0fd.canadacentral-01.azurewebsites.net/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
