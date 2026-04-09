@@ -2,33 +2,37 @@
 
 Quick, easy-to-follow prompts for demonstrating the RFP automation system with Azure-deployed MCP server.
 
----
-
-## 📋 Demo Scenario: Two-File Workflow
-
-### **Prompt 1: Upload Incomplete RFP & Check Compliance**
-
-```
-Upload sample_rfps/incomplete_RFP_Document.pdf using uploadRFP tool from rfp-server MCP, then check its compliance score using checkRFPCompliance tool.
-```
-
-**Expected Result:**
-- File uploaded to Azure Blob Storage
-- Compliance score: ~60-70% (incomplete)
-- Missing sections identified
-- Bob tells user to upload complete file
+**⚠️ IMPORTANT:** Do NOT use `uploadRFP` MCP tool (multipart/form-data not supported). Use Bob's built-in PDF reading skill instead.
 
 ---
 
-### **Prompt 2: Upload Complete RFP**
+## 📋 Demo Scenario: Two-File Workflow (RECOMMENDED)
+
+### **Prompt 1: Extract & Check Incomplete RFP**
 
 ```
-Now upload sample_rfps/complete_RFP_Document.pdf using uploadRFP tool from rfp-server MCP and check its compliance.
+Extract text from sample_rfps/incomplete_RFP_Document.pdf using your built-in file reading capability, then check its compliance using checkRFPCompliance tool from rfp-server MCP.
 ```
 
 **Expected Result:**
-- File uploaded successfully
-- Compliance score: 90%+ (complete)
+- Text extracted from PDF
+- Compliance score: **37.5%** (incomplete)
+- Present sections: Executive Summary, Scope of Work, Requirements
+- Missing sections: Timeline, Evaluation Criteria, Submission Instructions, Terms
+- Bob explains it's incomplete
+
+---
+
+### **Prompt 2: Extract & Check Complete RFP**
+
+```
+Now extract text from sample_rfps/complete_RFP_Document.pdf using your built-in file reading capability, then check its compliance using checkRFPCompliance tool from rfp-server MCP.
+```
+
+**Expected Result:**
+- Text extracted from PDF
+- Compliance score: **90%+** (complete)
+- All required sections present
 - Ready for proposal generation
 
 ---
@@ -36,65 +40,52 @@ Now upload sample_rfps/complete_RFP_Document.pdf using uploadRFP tool from rfp-s
 ### **Prompt 3: Generate Proposal & Send Email**
 
 ```
-Generate a complete proposal using generateProposal tool from rfp-server MCP with the complete RFP, then send it via email to client@example.com using sendProposalEmail tool.
+Generate a complete proposal using generateProposal tool from rfp-server MCP with the complete RFP text, then send it via email to client@example.com using sendProposalEmail tool from rfp-server MCP.
 ```
 
 **Expected Result:**
-- Professional proposal generated
+- Professional 5-section proposal generated
 - Email sent with proposal content
 - Demo complete!
 
 ---
 
-## 🚀 Alternative: Single Complete Flow
+## 🚀 Single Complete Flow (Copy-Paste Ready)
 
 ```
-Hi Bob! Let's process an RFP:
+Hi Bob! Let's process an RFP workflow:
 
-1. Upload sample_rfps/incomplete_RFP_Document.pdf using uploadRFP from rfp-server MCP
-2. Check compliance using checkRFPCompliance - show me the score
-3. Tell me it's incomplete and I need to upload a better file
-4. Then I'll upload sample_rfps/complete_RFP_Document.pdf using uploadRFP
-5. Check compliance again - should be 90%+
-6. Generate proposal using generateProposal from rfp-server MCP
-7. Send email to client@example.com using sendProposalEmail from rfp-server MCP
+1. Extract text from sample_rfps/incomplete_RFP_Document.pdf using your built-in file reading
+2. Check compliance using checkRFPCompliance tool from rfp-server MCP - show me the score
+3. Explain it's incomplete (should be ~37.5%)
+4. Extract text from sample_rfps/complete_RFP_Document.pdf using your built-in file reading
+5. Check compliance again using checkRFPCompliance - should be 90%+
+6. Generate proposal using generateProposal tool from rfp-server MCP
+7. Send email to client@example.com using sendProposalEmail tool from rfp-server MCP
 
-Execute step by step.
-```
-
----
-
-## 📝 For PDF Text Extraction (Using Bob's Skill)
-
-### **Prompt: Extract Text from PDF**
-
-```
-Read sample_rfps/incomplete_RFP_Document.pdf to extract its text content using your built-in file reading capability.
-```
-
-**Then parse it:**
-
-```
-Parse the extracted text using parseRFPText tool from rfp-server MCP to identify deadlines, criteria, and sections.
+Execute step by step and show results after each step.
 ```
 
 ---
 
-## 🎬 Quick 3-Step Demo
+## 📝 Alternative: Manual Step-by-Step
 
-### Step 1: Upload & Check
-```
-Upload sample_rfps/incomplete_RFP_Document.pdf using uploadRFP from rfp-server MCP and check compliance.
-```
+### **Step 1: Extract & Check Incomplete RFP**
 
-### Step 2: Upload Complete File
 ```
-Upload sample_rfps/complete_RFP_Document.pdf using uploadRFP from rfp-server MCP and check compliance.
+Extract text from sample_rfps/incomplete_RFP_Document.pdf to extract its text content using your built-in file reading capability, then check compliance using checkRFPCompliance tool from rfp-server MCP.
 ```
 
-### Step 3: Generate & Send
+### **Step 2: Extract & Check Complete RFP**
+
 ```
-Generate proposal using generateProposal from rfp-server MCP and send to client@example.com using sendProposalEmail.
+Extract text from sample_rfps/complete_RFP_Document.pdf using your built-in file reading, then check compliance using checkRFPCompliance tool from rfp-server MCP.
+```
+
+### **Step 3: Generate & Send**
+
+```
+Generate proposal using generateProposal tool from rfp-server MCP with the complete RFP text, then send to client@example.com using sendProposalEmail tool from rfp-server MCP.
 ```
 
 ---
@@ -103,30 +94,43 @@ Generate proposal using generateProposal from rfp-server MCP and send to client@
 
 ### Available from rfp-server:
 
-1. **uploadRFP** - Upload RFP file to Azure Blob
+1. ~~**uploadRFP**~~ - ❌ DO NOT USE (multipart not supported) - Use Bob's PDF reading skill instead
 2. **parseRFPText** - Extract metadata from text
-3. **parseRFPFromBlob** - Parse uploaded file
-4. **checkRFPCompliance** - Validate completeness
+3. **parseRFPFromBlob** - Parse uploaded file (if file already in blob)
+4. **checkRFPCompliance** - ✅ Validate completeness (USE THIS)
 5. **retrieveSimilarProposals** - Find past proposals
-6. **generateProposal** - Create complete proposal
+6. **generateProposal** - ✅ Create complete proposal (USE THIS)
 7. **downloadProposalPDF** - Generate PDF
-8. **sendProposalEmail** - Send via email
+8. **sendProposalEmail** - ✅ Send via email (USE THIS)
+
+### Recommended Workflow:
+1. **Bob's PDF Skill** → Extract text from local PDF
+2. **checkRFPCompliance** → Check if RFP is complete
+3. **generateProposal** → Generate proposal from text
+4. **sendProposalEmail** → Send proposal via email
 
 ---
 
 ## 💡 Demo Tips
 
-- **Start with incomplete file** to show compliance checking value
-- **Show the compliance score difference** between incomplete and complete
+- **Use Bob's built-in PDF reading** - Don't use uploadRFP MCP tool
+- **Start with incomplete file** to show compliance checking value (37.5%)
+- **Show the compliance score difference** between incomplete (37.5%) and complete (90%+)
 - **Emphasize time savings** - minutes vs hours/days
-- **Highlight Azure integration** - enterprise-grade solution
+- **Highlight Azure integration** - enterprise-grade MCP server solution
+- **Show AI-powered analysis** - compliance checking, proposal generation
 
 ---
 
 ## 📊 Expected Compliance Scores
 
-- **incomplete_RFP_Document.pdf**: 60-70% (missing sections)
-- **complete_RFP_Document.pdf**: 90%+ (all sections present)
+- **incomplete_RFP_Document.pdf**: **37.5%** (missing 4 critical sections)
+  - Present: Executive Summary, Scope of Work, Requirements
+  - Missing: Timeline, Evaluation Criteria, Submission Instructions, Terms
+  
+- **complete_RFP_Document.pdf**: **90%+** (all sections present)
+  - All required sections included
+  - Ready for proposal generation
 
 ---
 

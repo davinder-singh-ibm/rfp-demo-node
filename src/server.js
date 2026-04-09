@@ -21,6 +21,12 @@ const { swaggerSpec, swaggerUi } = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/swagger.json", (req, res) => res.json(swaggerSpec));
 
+// New endpoint to serve swagger.json from src/swagger.json
+app.get("/swagger_new.json", (req, res) => {
+  const swaggerJson = require("./swagger.json");
+  res.json(swaggerJson);
+});
+
 /**
  * ======================================
  * ENV FLAGS
