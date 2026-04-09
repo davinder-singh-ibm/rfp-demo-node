@@ -5,7 +5,6 @@ const { PORT, API_KEY } = require("./config/env");
 
 const uploadRoutes = require("./routes/upload.routes");
 const generateRoutes = require("./routes/generate.routes");
-const generateStreamRoutes = require("./routes/generate-stream.routes");
 const parserRoutes = require("./routes/parser.routes");
 const proposalRoutes = require("./routes/proposal.routes");
 const pdfRoutes = require("./routes/pdf.routes");
@@ -168,7 +167,6 @@ app.get("/api/health", (req, res) => {
  */
 app.use("/api/upload", requireAuth, uploadRoutes);
 app.use("/api/generate", requireAuth, generateRoutes);
-app.use("/api/generate-stream", requireAuth, generateStreamRoutes);
 app.use("/api/parser", requireAuth, parserRoutes);
 app.use("/api/proposals", requireAuth, proposalRoutes);
 app.use("/api/download-pdf", requireAuth, pdfRoutes);

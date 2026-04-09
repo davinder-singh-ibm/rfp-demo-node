@@ -29,10 +29,18 @@ async function extractRequirements(rfpText) {
     ],
     temperature: 0.2
   });
-  const content = response.choices[0].message.content;
+  let content = response.choices[0].message.content.trim();
+  
+  // Strip markdown code blocks if present
+  if (content.startsWith('```json')) {
+    content = content.replace(/^```json\s*\n?/, '').replace(/\n?```\s*$/, '');
+  } else if (content.startsWith('```')) {
+    content = content.replace(/^```\s*\n?/, '').replace(/\n?```\s*$/, '');
+  }
+  
   try {
-    return JSON.parse(content);
-  } catch {
+    return JSON.parse(content.trim());
+  } catch (error) {
     throw new Error("Azure OpenAI did not return valid JSON. Output was: " + content);
   }
 }

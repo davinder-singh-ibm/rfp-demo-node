@@ -21,75 +21,6 @@ function updateProgress(progressId, textId, percentage) {
   document.getElementById(textId).textContent = percentage + "%";
 }
 
-// Real-time progress tracking using Server-Sent Events
-function trackProgressWithSSE(url, body, progressId, textId, onComplete, onError) {
-  // Create a unique request ID for this generation
-  const requestId = Date.now();
-  
-  // Use fetch to initiate the SSE connection
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": "demo-mcp-key"
-    },
-    body: JSON.stringify(body)
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    function processStream() {
-      reader.read().then(({ done, value }) => {
-        if (done) {
-          return;
-        }
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop(); // Keep incomplete line in buffer
-
-        lines.forEach(line => {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              
-              if (data.type === 'complete') {
-                // Final result received
-                updateProgress(progressId, textId, 100);
-                onComplete(data.data);
-              } else if (data.type === 'error') {
-                // Error occurred
-                onError(data.error);
-              } else if (data.percentage !== undefined) {
-                // Progress update
-                updateProgress(progressId, textId, data.percentage);
-              }
-            } catch (e) {
-              console.error('Error parsing SSE data:', e);
-            }
-          }
-        });
-
-        processStream();
-      }).catch(error => {
-        console.error('Stream reading error:', error);
-        onError(error.message);
-      });
-    }
-
-    processStream();
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
-    onError(error.message);
-  });
-}
 
 async function uploadRFP() {
   const fileInput = document.getElementById("rfpFile");
@@ -99,6 +30,9 @@ async function uploadRFP() {
     alert("Please select a file first.");
     return;
   }
+
+  // Hide previous analysis
+  document.getElementById("rfpAnalysis").style.display = "none";
 
   // Show loader
   showLoader("uploadLoader", "uploadProgress", "uploadProgressText", "uploadBtn");
@@ -113,23 +47,33 @@ async function uploadRFP() {
     // Track upload progress
     xhr.upload.addEventListener("progress", (e) => {
       if (e.lengthComputable) {
-        const percentComplete = Math.round((e.loaded / e.total) * 100);
+        const percentComplete = Math.round((e.loaded / e.total) * 50); // Upload is 50% of total
         updateProgress("uploadProgress", "uploadProgressText", percentComplete);
       }
     });
 
     // Handle completion
-    xhr.addEventListener("load", () => {
+    xhr.addEventListener("load", async () => {
       if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
+        
+        // Update progress to 50% (upload complete)
+        updateProgress("uploadProgress", "uploadProgressText", 50);
+        
+        // Store extracted text
+        extractedTextGlobal = data.extractedText;
+        
+        // Show basic upload result
+        document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
+        
+        // Now analyze the RFP (parse and compliance check)
+        await analyzeRFP(data.extractedText);
         
         // Complete progress to 100%
         updateProgress("uploadProgress", "uploadProgressText", 100);
         
-        // Show result after a brief delay
+        // Hide loader after brief delay
         setTimeout(() => {
-          document.getElementById("uploadResult").textContent = JSON.stringify(data, null, 2);
-          extractedTextGlobal = data.extractedText;
           hideLoader("uploadLoader", "uploadBtn");
         }, 500);
       } else {
@@ -155,6 +99,222 @@ async function uploadRFP() {
   }
 }
 
+// Analyze RFP: Parse metadata and check compliance
+async function analyzeRFP(extractedText) {
+  try {
+    // Update progress
+    updateProgress("uploadProgress", "uploadProgressText", 60);
+    
+    // Call parse API
+    const parseResponse = await fetch("/api/parser/parse", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
+      body: JSON.stringify({ extractedText })
+    });
+    
+    updateProgress("uploadProgress", "uploadProgressText", 75);
+    
+    // Call compliance API
+    const complianceResponse = await fetch("/api/parser/compliance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
+      body: JSON.stringify({ extractedText })
+    });
+    
+    updateProgress("uploadProgress", "uploadProgressText", 90);
+    
+    // Process responses
+    let parseData = null;
+    let complianceData = null;
+    
+    if (parseResponse.ok) {
+      parseData = await parseResponse.json();
+    }
+    
+    if (complianceResponse.ok) {
+      complianceData = await complianceResponse.json();
+    }
+    
+    // Display analysis results
+    displayRFPAnalysis(parseData, complianceData);
+    
+  } catch (error) {
+    console.error("Analysis error:", error);
+    // Don't show error to user, just log it - upload was successful
+  }
+}
+
+// Display RFP analysis results
+function displayRFPAnalysis(parseData, complianceData) {
+  const analysisDiv = document.getElementById("rfpAnalysis");
+  
+  // Show analysis section
+  analysisDiv.style.display = "block";
+  
+  // Display compliance score
+  if (complianceData) {
+    displayComplianceScore(complianceData);
+    displayMissingSections(complianceData.missing_sections);
+    displayPresentSections(complianceData.present_sections);
+  }
+  
+  // Display metadata
+  if (parseData) {
+    displayMetadata(parseData);
+  }
+}
+
+// Display compliance score with visual indicator
+function displayComplianceScore(complianceData) {
+  const section = document.getElementById("complianceSection");
+  const scoreCircle = document.getElementById("scoreCircle");
+  const scoreValue = document.getElementById("scoreValue");
+  const scoreStatus = document.getElementById("scoreStatus");
+  const scoreRecommendation = document.getElementById("scoreRecommendation");
+  
+  section.style.display = "block";
+  
+  const score = complianceData.compliance_score || 0;
+  // Remove any existing % sign and add it once
+  const scoreText = String(score).replace('%', '');
+  scoreValue.textContent = scoreText + "%";
+  
+  // Set color based on score
+  scoreCircle.className = "score-circle";
+  if (score < 60) {
+    scoreCircle.classList.add("low");
+    scoreStatus.textContent = "⚠️ Low Compliance";
+    scoreStatus.style.color = "#dc3545";
+  } else if (score < 80) {
+    scoreCircle.classList.add("medium");
+    scoreStatus.textContent = "⚡ Moderate Compliance";
+    scoreStatus.style.color = "#ffc107";
+  } else {
+    scoreCircle.classList.add("high");
+    scoreStatus.textContent = "✅ High Compliance";
+    scoreStatus.style.color = "#28a745";
+  }
+  
+  // Set recommendation
+  if (complianceData.recommendation) {
+    scoreRecommendation.textContent = complianceData.recommendation;
+  } else if (score < 80) {
+    scoreRecommendation.textContent = "Consider adding missing sections before generating proposal.";
+  } else {
+    scoreRecommendation.textContent = "RFP meets compliance requirements. Ready for proposal generation.";
+  }
+}
+
+// Display missing sections
+function displayMissingSections(missingSections) {
+  const section = document.getElementById("missingSectionsDiv");
+  const list = document.getElementById("missingSectionsList");
+  
+  if (missingSections && missingSections.length > 0) {
+    section.style.display = "block";
+    list.innerHTML = "";
+    
+    missingSections.forEach(sectionName => {
+      const tag = document.createElement("div");
+      tag.className = "section-tag missing";
+      tag.innerHTML = `<span>❌</span><span>${sectionName}</span>`;
+      list.appendChild(tag);
+    });
+  } else {
+    section.style.display = "none";
+  }
+}
+
+// Display present sections
+function displayPresentSections(presentSections) {
+  const section = document.getElementById("presentSectionsDiv");
+  const list = document.getElementById("presentSectionsList");
+  
+  if (presentSections && presentSections.length > 0) {
+    section.style.display = "block";
+    list.innerHTML = "";
+    
+    presentSections.forEach(sectionName => {
+      const tag = document.createElement("div");
+      tag.className = "section-tag present";
+      tag.innerHTML = `<span>✓</span><span>${sectionName}</span>`;
+      list.appendChild(tag);
+    });
+  } else {
+    section.style.display = "none";
+  }
+}
+
+// Display RFP metadata
+function displayMetadata(parseData) {
+  const section = document.getElementById("metadataSection");
+  const grid = document.getElementById("metadataGrid");
+  
+  section.style.display = "block";
+  grid.innerHTML = "";
+  
+  // Helper function to add metadata item
+  function addMetadataItem(label, value) {
+    if (value && value !== "N/A" && value !== "Not specified") {
+      const item = document.createElement("div");
+      item.className = "metadata-item";
+      item.innerHTML = `
+        <div class="metadata-label">${label}</div>
+        <div class="metadata-value">${value}</div>
+      `;
+      grid.appendChild(item);
+    }
+  }
+  
+  // Add various metadata fields
+  if (parseData.deadlines && parseData.deadlines.length > 0) {
+    addMetadataItem("Deadlines", parseData.deadlines.join(", "));
+  }
+  
+  if (parseData.criteria && parseData.criteria.length > 0) {
+    addMetadataItem("Evaluation Criteria", parseData.criteria.join(", "));
+  }
+  
+  if (parseData.pricing) {
+    addMetadataItem("Pricing", parseData.pricing);
+  }
+  
+  if (parseData.sections && parseData.sections.length > 0) {
+    addMetadataItem("Total Sections", parseData.sections.length.toString());
+  }
+  
+  if (parseData.title) {
+    addMetadataItem("Title", parseData.title);
+  }
+  
+  if (parseData.issueDate) {
+    addMetadataItem("Issue Date", parseData.issueDate);
+  }
+  
+  if (parseData.deadline) {
+    addMetadataItem("Submission Deadline", parseData.deadline);
+  }
+  
+  if (parseData.industry) {
+    addMetadataItem("Industry", parseData.industry);
+  }
+  
+  if (parseData.projectType) {
+    addMetadataItem("Project Type", parseData.projectType);
+  }
+  
+  // If no metadata items were added, hide the section
+  if (grid.children.length === 0) {
+    section.style.display = "none";
+  }
+}
+
 async function generateProposal() {
   if (!extractedTextGlobal) {
     alert("Upload RFP first!");
@@ -164,32 +324,52 @@ async function generateProposal() {
   // Show loader
   showLoader("generateLoader", "generateProgress", "generateProgressText", "generateBtn");
   
-  // Use real-time progress tracking with SSE
-  trackProgressWithSSE(
-    "/api/generate-stream",
-    { extractedText: extractedTextGlobal },
-    "generateProgress",
-    "generateProgressText",
-    (data) => {
-      // Success callback
-      generatedProposalData = data;
-      
-      // Show result after a brief delay
-      setTimeout(() => {
-        displayProposalResult(data);
-        hideLoader("generateLoader", "generateBtn");
-        
-        // Enable Download and Send Email buttons
-        document.getElementById("downloadBtn").disabled = false;
-        document.getElementById("sendEmailBtn").disabled = false;
-      }, 500);
-    },
-    (error) => {
-      // Error callback
-      hideLoader("generateLoader", "generateBtn");
-      alert("Generation failed: " + error);
+  try {
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      const currentProgress = parseInt(document.getElementById("generateProgress").style.width) || 0;
+      if (currentProgress < 90) {
+        updateProgress("generateProgress", "generateProgressText", currentProgress + 10);
+      }
+    }, 1000);
+
+    // Call the regular generate API
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "demo-mcp-key"
+      },
+      body: JSON.stringify({ extractedText: extractedTextGlobal })
+    });
+
+    clearInterval(progressInterval);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Generation failed");
     }
-  );
+
+    const data = await response.json();
+    generatedProposalData = data;
+    
+    // Complete progress
+    updateProgress("generateProgress", "generateProgressText", 100);
+    
+    // Show result after a brief delay
+    setTimeout(() => {
+      displayProposalResult(data);
+      hideLoader("generateLoader", "generateBtn");
+      
+      // Enable Download and Send Email buttons
+      document.getElementById("downloadBtn").disabled = false;
+      document.getElementById("sendEmailBtn").disabled = false;
+    }, 500);
+    
+  } catch (error) {
+    hideLoader("generateLoader", "generateBtn");
+    alert("Generation failed: " + error.message);
+  }
 }
 
 // Download the generated proposal as PDF

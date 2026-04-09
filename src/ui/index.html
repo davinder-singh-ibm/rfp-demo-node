@@ -46,6 +46,59 @@
             </div>
             <div class="progress-text" id="uploadProgressText">0%</div>
           </div>
+          
+          <!-- RFP Analysis Section -->
+          <div id="rfpAnalysis" class="rfp-analysis" style="display: none;">
+            <div class="analysis-header">
+              <h3 class="analysis-title">📊 RFP Analysis Results</h3>
+            </div>
+            
+            <!-- Compliance Score -->
+            <div id="complianceSection" class="analysis-section" style="display: none;">
+              <div class="section-header">
+                <span class="section-icon">✅</span>
+                <h4 class="section-title">Compliance Check</h4>
+              </div>
+              <div class="compliance-score-container">
+                <div class="score-circle" id="scoreCircle">
+                  <div class="score-value" id="scoreValue">--</div>
+                  <div class="score-label">Score</div>
+                </div>
+                <div class="score-details">
+                  <div class="score-status" id="scoreStatus"></div>
+                  <div class="score-recommendation" id="scoreRecommendation"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Missing Sections -->
+            <div id="missingSectionsDiv" class="analysis-section" style="display: none;">
+              <div class="section-header">
+                <span class="section-icon">⚠️</span>
+                <h4 class="section-title">Missing Sections</h4>
+              </div>
+              <div class="sections-list" id="missingSectionsList"></div>
+            </div>
+            
+            <!-- Present Sections -->
+            <div id="presentSectionsDiv" class="analysis-section" style="display: none;">
+              <div class="section-header">
+                <span class="section-icon">✓</span>
+                <h4 class="section-title">Present Sections</h4>
+              </div>
+              <div class="sections-list" id="presentSectionsList"></div>
+            </div>
+            
+            <!-- RFP Metadata -->
+            <div id="metadataSection" class="analysis-section" style="display: none;">
+              <div class="section-header">
+                <span class="section-icon">📋</span>
+                <h4 class="section-title">RFP Details</h4>
+              </div>
+              <div class="metadata-grid" id="metadataGrid"></div>
+            </div>
+          </div>
+          
           <div class="result-container">
             <pre id="uploadResult"></pre>
           </div>

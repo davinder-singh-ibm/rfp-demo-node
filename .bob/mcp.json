@@ -1,1 +1,1 @@
-{"mcpServers":{"rfp-server":{"type":"streamable-http","url":"https://rfp-mcp-g5bqg8dyehbcc0fd.canadacentral-01.azurewebsites.net/mcp","disabled":false,"alwaysAllow":[],"disabledTools":[]}}}
+{"mcpServers":{"rfp-server":{"type":"streamable-http","url":"https://rfp-mcp-g5bqg8dyehbcc0fd.canadacentral-01.azurewebsites.net/mcp","disabled":false,"alwaysAllow":["parseRFPText"],"disabledTools":[]}}}
