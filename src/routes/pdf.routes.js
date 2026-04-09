@@ -20,6 +20,8 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - proposal
  *             properties:
  *               proposal:
  *                 type: string
@@ -36,8 +38,12 @@ const router = express.Router();
  *               savedAs:
  *                 type: string
  *                 description: Blob file name reference for filename (optional)
- *             required:
- *               - proposal
+ *           examples:
+ *             basic:
+ *               summary: Typical PDF generation request
+ *               value:
+ *                 proposal: "Executive Summary\n\nWe are pleased to submit our proposal..."
+ *                 companyName: "ABC Corporation"
  *     responses:
  *       200:
  *         description: PDF file generated successfully

@@ -25,11 +25,21 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - extractedText
  *             properties:
  *               extractedText:
  *                 type: string
+ *                 description: Full extracted plain text of the RFP
  *               industry:
  *                 type: string
+ *                 description: Optional industry filter (e.g., "healthcare", "finance")
+ *           examples:
+ *             basic:
+ *               summary: Typical retrieval request
+ *               value:
+ *                 extractedText: "Request for Proposal for cloud migration services..."
+ *                 industry: "technology"
  *     responses:
  *       200:
  *         description: List of similar proposals
@@ -93,15 +103,21 @@ router.post("/retrieve", async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - blobName
  *             properties:
  *               blobName:
  *                 type: string
  *                 description: Name of the blob file in incoming container
  *               industry:
  *                 type: string
- *                 description: Optional industry filter
- *             required:
- *               - blobName
+ *                 description: Optional industry filter (e.g., "healthcare", "finance")
+ *           examples:
+ *             basic:
+ *               summary: Typical blob retrieval request
+ *               value:
+ *                 blobName: "123e4567-RFP.pdf"
+ *                 industry: "healthcare"
  *     responses:
  *       200:
  *         description: List of similar proposals

@@ -34,6 +34,8 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - extractedText
  *             properties:
  *               extractedText:
  *                 type: string

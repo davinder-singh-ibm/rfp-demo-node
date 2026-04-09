@@ -4,110 +4,21 @@ Copy-paste these prompts directly to Bob AI Agent for a smooth demo flow.
 
 ---
 
-## 📌 Quick Demo (5 minutes)
+## 📌 Quick Demo (5 minutes) - RECOMMENDED
 
-### Prompt 1: Extract Text & Parse
+### Prompt 1: Extract & Check Incomplete RFP
 ```
-Read the file sample_rfps/rfp_demo_doc.docx to extract its text content, then parse it using the parseRFPText tool from rfp-server MCP to extract metadata like deadlines, criteria, and sections.
-```
-
-### Prompt 2: Check Compliance
-```
-Check compliance of the extracted RFP text using the checkRFPCompliance tool from rfp-server MCP.
+Extract text from sample_rfps/incomplete_RFP_Document.pdf using your PDF extraction skill, then check its compliance using checkRFPCompliance tool from rfp-server MCP.
 ```
 
-### Prompt 3: Generate Proposal
+### Prompt 2: Extract & Check Complete RFP
 ```
-Generate a complete proposal using the generateProposal tool from rfp-server MCP with the extracted RFP text.
-```
-
----
-
-## 🎬 Full Demo (15 minutes)
-
-### Step 1: Extract Text from RFP
-```
-Please read the file sample_rfps/rfp_demo_doc.docx to extract its text content. Use your built-in file reading capability to get the full text.
+Extract text from sample_rfps/complete_RFP_Document.pdf using your PDF extraction skill, then check its compliance using checkRFPCompliance tool from rfp-server MCP.
 ```
 
-### Step 2: Parse Metadata
+### Prompt 3: Generate & Send Proposal
 ```
-Now parse the extracted RFP text using the parseRFPText tool from rfp-server MCP to identify:
-- Deadlines
-- Evaluation criteria
-- Required sections
-- Pricing information
-- Technical requirements
-```
-
-### Step 3: Compliance Check (CRITICAL)
-```
-Check RFP compliance using the checkRFPCompliance tool from rfp-server MCP. Identify:
-- Compliance score
-- Missing sections
-- Present sections
-- Recommendations
-```
-
-### Step 4: Analyze Missing Sections
-```
-Based on the compliance check, we're missing these sections:
-[List will be provided by compliance check]
-
-Please suggest content for each missing section based on the RFP context.
-```
-
-### Step 5: Enhance RFP Text
-```
-Add the following sections to the RFP text:
-
-Executive Summary:
-[Your suggested content]
-
-Company Background:
-[Your suggested content]
-
-Team Qualifications:
-[Your suggested content]
-
-Risk Management:
-[Your suggested content]
-
-Implementation Timeline:
-[Your suggested content]
-
-Please provide the complete enhanced RFP text.
-```
-
-### Step 6: Re-check Compliance
-```
-Check compliance again with the enhanced RFP text to ensure we meet all requirements.
-```
-
-### Step 7: Retrieve Similar Proposals
-```
-Retrieve similar past proposals using the retrieveSimilarProposals tool from rfp-server MCP with the enhanced RFP text and industry "Technology".
-```
-
-### Step 8: Generate Proposal
-```
-Generate a complete proposal using the generateProposal tool from rfp-server MCP with the enhanced RFP text that includes all required sections.
-```
-
-### Step 9: Download PDF
-```
-Download the generated proposal as PDF using the downloadProposalPDF tool from rfp-server MCP. Include:
-- Company name: ABC Corporation
-- RFP metadata from parsing
-- Generated proposal text
-```
-
-### Step 10: Send Email
-```
-Send the proposal via email using the sendProposalEmail tool from rfp-server MCP to:
-- To: client@abccorp.com
-- Subject: Proposal for AI-Powered RFP Response Solution
-- Include the generated proposal text
+Using the extracted text from complete_RFP_Document.pdf, generate a complete proposal using generateProposal tool from rfp-server MCP, then send it to client@example.com using sendProposalEmail tool.
 ```
 
 ---
@@ -115,47 +26,102 @@ Send the proposal via email using the sendProposalEmail tool from rfp-server MCP
 ## 🔥 One-Shot Complete Demo
 
 ```
-Hi Bob! Execute this complete RFP processing workflow:
+Hi Bob! Execute this RFP workflow:
 
-1. Read the file sample_rfps/rfp_demo_doc.docx to extract its text content
-2. Parse the extracted text using the parseRFPText tool from rfp-server MCP
-3. Check compliance using the checkRFPCompliance tool from rfp-server MCP
-4. If compliance < 80%, identify missing sections and suggest content
-5. Add missing sections to create enhanced RFP text
-6. Re-check compliance using checkRFPCompliance to confirm > 80%
-7. Retrieve similar proposals using the retrieveSimilarProposals tool from rfp-server MCP
-8. Generate proposal using the generateProposal tool from rfp-server MCP with enhanced text
-9. Download as PDF using the downloadProposalPDF tool from rfp-server MCP
-10. Send email using the sendProposalEmail tool from rfp-server MCP to client@abccorp.com
+1. Extract text from sample_rfps/incomplete_RFP_Document.pdf using your PDF skill
+2. Check compliance using checkRFPCompliance from rfp-server MCP - show the score (should be ~57%)
+3. Tell me it's incomplete and what's missing
+4. Extract text from sample_rfps/complete_RFP_Document.pdf using your PDF skill
+5. Check compliance again using checkRFPCompliance (should be 90%+)
+6. Generate proposal using generateProposal from rfp-server MCP with the extracted text
+7. Send email to client@example.com using sendProposalEmail from rfp-server MCP
 
-Execute steps sequentially and show results after each step.
+Execute step by step and show results after each step.
+```
+
+---
+
+## 🎬 Full Demo (15 minutes)
+
+### Step 1: Extract Text from Incomplete RFP
+```
+Extract text from sample_rfps/incomplete_RFP_Document.pdf using your built-in PDF extraction skill. Show me the extracted content.
+```
+
+### Step 2: Check Compliance (Incomplete)
+```
+Check compliance of the extracted text using the checkRFPCompliance tool from rfp-server MCP. Show:
+- Compliance score
+- Missing sections
+- Present sections
+- Recommendations
+```
+
+### Step 3: Extract Text from Complete RFP
+```
+Extract text from sample_rfps/complete_RFP_Document.pdf using your PDF extraction skill.
+```
+
+### Step 4: Check Compliance (Complete)
+```
+Check compliance of the complete RFP text using checkRFPCompliance tool from rfp-server MCP. Compare with the incomplete RFP results.
+```
+
+### Step 5: Parse Metadata
+```
+Parse the complete RFP text using the parseRFPText tool from rfp-server MCP to identify:
+- Deadlines
+- Evaluation criteria
+- Required sections
+- Pricing information
+- Technical requirements
+```
+
+### Step 6: Retrieve Similar Proposals
+```
+Retrieve similar past proposals using the retrieveSimilarProposals tool from rfp-server MCP with the complete RFP text and industry "Technology".
+```
+
+### Step 7: Generate Proposal
+```
+Generate a complete proposal using the generateProposal tool from rfp-server MCP with the complete RFP text.
+```
+
+### Step 8: Download PDF
+```
+Download the generated proposal as PDF using the downloadProposalPDF tool from rfp-server MCP.
+```
+
+### Step 9: Send Email
+```
+Send the proposal via email using the sendProposalEmail tool from rfp-server MCP to client@example.com with subject "Proposal Response".
 ```
 
 ---
 
 ## 🎯 Focused Demos
 
-### Demo A: Compliance Focus
+### Demo A: Compliance Focus (RECOMMENDED)
 ```
-1. Read sample_rfps/rfp_demo_doc.docx to extract text
-2. Parse using parseRFPText from rfp-server MCP
-3. Check compliance using checkRFPCompliance - show missing sections
-4. Add missing sections to the RFP text
-5. Re-check compliance - show improvement
-6. Generate proposal using generateProposal with complete RFP
+1. Extract text from incomplete_RFP_Document.pdf using PDF skill
+2. Check compliance using checkRFPCompliance - show ~57% score
+3. Extract text from complete_RFP_Document.pdf using PDF skill
+4. Check compliance again - show 90%+ improvement
+5. Generate proposal using generateProposal with complete RFP
 ```
 
 ### Demo B: AI Generation Focus
 ```
-1. Read and parse RFP using parseRFPText from rfp-server MCP
-2. Retrieve similar past proposals using retrieveSimilarProposals
-3. Generate proposal using generateProposal showing AI capabilities
-4. Download professional PDF using downloadProposalPDF
+1. Extract text from complete_RFP_Document.pdf using PDF skill
+2. Parse using parseRFPText from rfp-server MCP
+3. Retrieve similar past proposals using retrieveSimilarProposals
+4. Generate proposal using generateProposal showing AI capabilities
+5. Download professional PDF using downloadProposalPDF
 ```
 
 ### Demo C: End-to-End Automation
 ```
-1. Read RFP document to extract text
+1. Extract text from complete_RFP_Document.pdf using PDF skill
 2. Full automated processing using rfp-server MCP tools (parse, compliance, generate)
 3. Email delivery using sendProposalEmail
 Show time savings vs manual process
@@ -165,14 +131,14 @@ Show time savings vs manual process
 
 ## 🐛 Troubleshooting Prompts
 
-### If upload fails:
+### If PDF extraction fails:
 ```
-The file path should be relative to the workspace. Try: sample_rfps/rfp_demo_doc.docx
+The file path should be relative to the workspace. Try: sample_rfps/incomplete_RFP_Document.pdf
 ```
 
 ### If compliance is low:
 ```
-Show me the missing sections from the compliance check. I'll add them to the RFP text.
+This is expected for the incomplete RFP! Show me the missing sections. Now let's try the complete RFP.
 ```
 
 ### If generation fails:
@@ -189,47 +155,40 @@ The MCP server might need authentication. Check if the server is running and acc
 
 ## 📊 Expected Results
 
-### After Upload:
+### After Incomplete RFP Compliance Check:
 ```json
 {
-  "message": "RFP uploaded successfully",
-  "fileId": "uuid",
-  "blobName": "uuid-rfp_demo_doc.docx",
-  "extractedText": "Request for Proposal (RFP)..."
-}
-```
-
-### After Parse:
-```json
-{
-  "deadlines": ["01-10-1990"],
-  "criteria": ["It should be in COBOL, dinosaur language"],
-  "pricing": "100$",
-  "sections": ["Introduction", "Project Overview", ...]
-}
-```
-
-### After Compliance Check:
-```json
-{
-  "compliance_score": 65,
-  "missing_sections": [
-    "Executive Summary",
-    "Company Background",
-    "Team Qualifications",
-    "Risk Management",
-    "Implementation Timeline"
+  "present_sections": [
+    "Introduction",
+    "Scope of Work",
+    "Requirements or Specifications",
+    "Timeline or Schedule"
   ],
-  "present_sections": [...],
-  "recommendation": "Add missing sections"
+  "missing_sections": [
+    "Executive Summary or Introduction",
+    "Evaluation Criteria",
+    "Submission Instructions",
+    "Terms and Conditions"
+  ],
+  "compliance_score": "57%"
 }
 ```
 
-### After Enhanced Compliance:
+### After Complete RFP Compliance Check:
 ```json
 {
-  "compliance_score": 95,
+  "compliance_score": "90-95%",
   "missing_sections": [],
+  "present_sections": [
+    "Executive Summary",
+    "Introduction",
+    "Scope of Work",
+    "Requirements",
+    "Timeline",
+    "Evaluation Criteria",
+    "Submission Instructions",
+    "Terms and Conditions"
+  ],
   "recommendation": "Ready for proposal generation"
 }
 ```
@@ -239,27 +198,27 @@ The MCP server might need authentication. Check if the server is running and acc
 ## 🎓 Demo Tips
 
 1. **Start with compliance check** - This is the key differentiator
-2. **Show before/after** - Demonstrate improvement after adding sections
+2. **Show before/after** - Demonstrate improvement from incomplete to complete
 3. **Highlight AI capabilities** - Semantic search, intelligent generation
-4. **Emphasize time savings** - Compare to manual process
-5. **Show end-to-end** - From upload to email delivery
+4. **Emphasize time savings** - Compare to manual process (20+ hours → 5 minutes)
+5. **Show end-to-end** - From extraction to email delivery
 
 ---
 
 ## 📝 Presenter Notes
 
 ### Key Messages:
+- ✅ Bob's PDF extraction + Azure MCP = Powerful automation
 - ✅ Automated compliance checking prevents incomplete proposals
 - ✅ AI-powered generation maintains quality and consistency
-- ✅ Semantic search leverages past successful proposals
-- ✅ End-to-end automation saves 60-80% of time
+- ✅ End-to-end automation saves 95-98% of time
 - ✅ Azure integration ensures enterprise-grade security
 
 ### Demo Flow:
 1. **Problem:** Manual RFP responses are time-consuming and error-prone
 2. **Solution:** AI-powered automation with compliance checking
-3. **Demo:** Show complete workflow with real RFP
-4. **Results:** Professional proposal in minutes vs hours/days
+3. **Demo:** Show complete workflow with real RFPs
+4. **Results:** Professional proposal in 5 minutes vs 20+ hours
 5. **Value:** Time savings, quality improvement, scalability
 
 ---
@@ -274,18 +233,10 @@ Retrieve similar proposals for industry "Healthcare" instead of Technology.
 ### Multiple RFPs:
 ```
 Process multiple RFPs in parallel:
-1. Read rfp_demo_doc.docx to extract text
-2. Read RFP_Document.pdf to extract text
-3. Parse both using parseRFPText from rfp-server MCP
-Compare compliance scores and generate proposals for both.
-```
-
-### Custom Sections:
-```
-Add these custom sections to the RFP:
-- Sustainability Approach
-- Innovation Strategy
-- Partnership Model
+1. Extract text from incomplete_RFP_Document.pdf
+2. Extract text from complete_RFP_Document.pdf
+3. Check compliance for both using checkRFPCompliance
+Compare compliance scores and generate proposal for the complete one.
 ```
 
 ---
@@ -293,13 +244,13 @@ Add these custom sections to the RFP:
 ## 📞 Support
 
 If you encounter issues during the demo:
-1. Verify Azure server is running: https://rfp-api-service-c8adb8a8h2gmbcf8.canadacentral-01.azurewebsites.net/api/health
-2. Check MCP connection in Bob settings (should show "Connected")
-3. Ensure file paths are correct (relative to workspace)
-4. Verify MCP authentication is configured in Bob
+1. Verify MCP server connection in Bob settings (should show "Connected")
+2. Ensure file paths are correct (relative to workspace)
+3. Check that PDF files exist in sample_rfps/ directory
+4. Verify rfp-server MCP is running
 
 ---
 
 **Last Updated:** 2026-04-09
-**Version:** 1.0
+**Version:** 2.0 (Updated for PDF Extraction)
 **For:** IBM Bob AI Agent Demo

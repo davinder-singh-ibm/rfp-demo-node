@@ -28,12 +28,31 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - extractedText
  *             properties:
  *               extractedText:
  *                 type: string
+ *                 description: Full extracted plain text of the RFP
+ *           examples:
+ *             basic:
+ *               summary: Typical RFP text
+ *               value:
+ *                 extractedText: "Request for Proposal\n1. Introduction\nABC Corporation invites proposals..."
  *     responses:
  *       200:
  *         description: Parsed RFP metadata
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deadline:
+ *                   type: string
+ *                 criteria:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       400:
  *         description: Missing or invalid extractedText
  *       500:
@@ -56,12 +75,31 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - blobName
  *             properties:
  *               blobName:
  *                 type: string
+ *                 description: Name of the blob file in incoming container
+ *           examples:
+ *             basic:
+ *               summary: Typical blob reference
+ *               value:
+ *                 blobName: "123e4567-RFP.pdf"
  *     responses:
  *       200:
  *         description: Parsed metadata from blob file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deadline:
+ *                   type: string
+ *                 criteria:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       400:
  *         description: Missing blobName
  *       500:
@@ -85,12 +123,45 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - extractedText
  *             properties:
  *               extractedText:
  *                 type: string
+ *                 description: Full extracted plain text of the RFP
+ *           examples:
+ *             basic:
+ *               summary: Typical RFP text
+ *               value:
+ *                 extractedText: "Request for Proposal\n1. Introduction\nABC Corporation invites proposals..."
  *     responses:
  *       200:
  *         description: Compliance check result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 compliance_score:
+ *                   type: string
+ *                   description: Percentage score (e.g., "37.5%")
+ *                 present_sections:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: List of sections found in the RFP
+ *                 missing_sections:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: List of required sections not found
+ *             examples:
+ *               incomplete:
+ *                 summary: Incomplete RFP result
+ *                 value:
+ *                   compliance_score: "37.5%"
+ *                   present_sections: ["Executive Summary or Introduction", "Scope of Work"]
+ *                   missing_sections: ["Timeline or Schedule", "Evaluation Criteria"]
  *       400:
  *         description: Missing extractedText
  *       500:

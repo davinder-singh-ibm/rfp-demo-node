@@ -6,25 +6,29 @@ This demo package showcases an AI-powered RFP (Request for Proposal) response au
 
 ### 📄 Documentation Files
 
-1. **[RFP_DEMO_GUIDE.md](./RFP_DEMO_GUIDE.md)** - Complete step-by-step demo guide (15-20 min)
-2. **[DEMO_PROMPTS_QUICK_REFERENCE.md](./DEMO_PROMPTS_QUICK_REFERENCE.md)** - Ready-to-use prompts (copy-paste)
-3. **[RFP_WORKFLOW_DIAGRAM.md](./RFP_WORKFLOW_DIAGRAM.md)** - Visual workflow diagrams
-4. **[swagger.json](./swagger.json)** - Complete API documentation
+1. **[DEMO_PROMPTS_BOB_AZURE.md](./DEMO_PROMPTS_BOB_AZURE.md)** - ⭐ **Azure MCP Demo Prompts** (5-7 min)
+2. **[RFP_DEMO_GUIDE.md](./RFP_DEMO_GUIDE.md)** - Complete step-by-step demo guide (15-20 min)
+3. **[DEMO_PROMPTS_QUICK_REFERENCE.md](./DEMO_PROMPTS_QUICK_REFERENCE.md)** - Ready-to-use prompts (copy-paste)
+4. **[RFP_WORKFLOW_DIAGRAM.md](./RFP_WORKFLOW_DIAGRAM.md)** - Visual workflow diagrams
+5. **[swagger.json](./swagger.json)** - Complete API documentation
 
 ### 📁 Sample Files
 
+- `sample_rfps/incomplete_RFP_Document.pdf` - Incomplete RFP (60-70% compliance)
+- `sample_rfps/complete_RFP_Document.pdf` - Complete RFP (90%+ compliance)
 - `sample_rfps/rfp_demo_doc.docx` - Demo RFP document
-- `sample_rfps/RFP_Document.pdf` - Additional sample RFP
 
 ---
 
 ## 🎯 Quick Start
 
-### Option 1: Quick Demo (5 minutes)
+### Option 1: Azure MCP Demo (5 minutes) ⭐ **RECOMMENDED**
 
 ```
-Read sample_rfps/rfp_demo_doc.docx to extract text, parse it using parseRFPText from rfp-server MCP (Azure), check compliance, and generate a proposal.
+Upload sample_rfps/incomplete_RFP_Document.pdf using uploadRFP from rfp-server MCP, check compliance, then upload sample_rfps/complete_RFP_Document.pdf, generate proposal and send email to client@example.com.
 ```
+
+See [DEMO_PROMPTS_BOB_AZURE.md](./DEMO_PROMPTS_BOB_AZURE.md) for detailed Azure demo prompts.
 
 ### Option 2: Full Demo (15 minutes)
 

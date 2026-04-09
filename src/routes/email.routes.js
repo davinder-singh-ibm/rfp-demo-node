@@ -21,10 +21,15 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - to
+ *               - subject
+ *               - proposalText
  *             properties:
  *               to:
  *                 type: string
  *                 description: Recipient email address
+ *                 format: email
  *               subject:
  *                 type: string
  *                 description: Email subject
@@ -37,10 +42,13 @@ const router = express.Router();
  *               savedAs:
  *                 type: string
  *                 description: Blob file name reference (optional)
- *             required:
- *               - to
- *               - subject
- *               - proposalText
+ *           examples:
+ *             basic:
+ *               summary: Typical email request
+ *               value:
+ *                 to: "client@example.com"
+ *                 subject: "Proposal for AI RFP Automation"
+ *                 proposalText: "Executive Summary\n\nWe are pleased to submit..."
  *     responses:
  *       200:
  *         description: Email sent successfully
