@@ -40,7 +40,7 @@ Now extract text from sample_rfps/complete_RFP_Document.pdf using your built-in 
 ### **Prompt 3: Generate Proposal & Send Email**
 
 ```
-Generate a complete proposal using generateProposal tool from rfp-server MCP with the complete RFP text, then send it via email to client@example.com using sendProposalEmail tool from rfp-server MCP.
+Generate a complete proposal using generateProposal tool from rfp-server MCP with the complete RFP text, then send it via email to davinder.singh@ibm.com using sendProposalEmail tool from rfp-server MCP.
 ```
 
 **Expected Result:**
