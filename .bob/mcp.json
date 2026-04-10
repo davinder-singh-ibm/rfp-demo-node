@@ -1,22 +1,22 @@
 {
     "mcpServers": {
-        "rfp-server": {
+        "rfp-mcp-server": {
             "type": "streamable-http",
             "url": "https://rfp-mcp-g5bqg8dyehbcc0fd.canadacentral-01.azurewebsites.net/mcp",
             "disabled": false,
             "alwaysAllow": [
-                "parseRFPText",
-                "uploadRFP",
-                "retrieveSimilarProposalsFromBlob",
-                "retrieveSimilarProposals",
-                "downloadProposalPDF",
-                "parseRFPFromBlob",
-                "generateProposal",
-                "sendProposalEmail",
-                "checkRFPCompliance"
+                "rfp demo node api_post_api_parser_compliance",
+                "rfp demo node api_post_api_upload",
+                "rfp demo node api_post_api_proposals_retrieve_from_blob",
+                "rfp demo node api_post_api_proposals_retrieve",
+                "rfp demo node api_post_api_download_pdf",
+                "rfp demo node api_post_api_parser_parse_from_blob",
+                "rfp demo node api_post_api_parser_parse",
+                "rfp demo node api_post_api_generate",
+                "rfp demo node api_post_api_send_email"
             ],
             "disabledTools": [],
-            "timeout": 300
+            "timeout": 600
         }
     }
 }
