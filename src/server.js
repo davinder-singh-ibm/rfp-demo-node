@@ -21,18 +21,13 @@ const { swaggerSpec, swaggerUi } = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/swagger.json", (req, res) => res.json(swaggerSpec));
 
-// New endpoint to serve swagger.json from src/swagger.json
-app.get("/swagger_new.json", (req, res) => {
-  const swaggerJson = require("./swagger.json");
-  res.json(swaggerJson);
-});
 
 /**
  * ======================================
  * ENV FLAGS
  * ======================================
  */
-const DISABLE_ENTRA_AUTH = process.env.DISABLE_ENTRA_AUTH === "true";
+const DISABLE_AUTH = process.env.DISABLE_AUTH === "true";
 const DISABLE_CORS = process.env.DISABLE_CORS === "true";
 
 /**
@@ -81,7 +76,7 @@ app.use(express.urlencoded({ extended: true }));
  * ======================================
  */
 function requireAuth(req, res, next) {
-  if (DISABLE_ENTRA_AUTH) {
+  if (DISABLE_AUTH) {
     return next();
   }
 
@@ -120,7 +115,7 @@ function requireAuth(req, res, next) {
  * ======================================
  */
 app.get("/api/me", (req, res) => {
-  if (DISABLE_ENTRA_AUTH) {
+  if (DISABLE_AUTH) {
     return res.json({
       authenticated: true,
       message: "Auth Disabled (DEV MODE)",
@@ -161,7 +156,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     message: "RFP Generator API running",
-    authEnabled: !DISABLE_ENTRA_AUTH,
+    authEnabled: !DISABLE_AUTH,
     corsEnabled: !DISABLE_CORS,
   });
 });
@@ -232,8 +227,8 @@ app.get("*", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(
-    `Entra Auth: ${
-      DISABLE_ENTRA_AUTH ? "DISABLED (DEV MODE)" : "ENABLED"
+    `Auth: ${
+      DISABLE_AUTH ? "DISABLED (DEV MODE)" : "ENABLED"
     }`
   );
   console.log(
